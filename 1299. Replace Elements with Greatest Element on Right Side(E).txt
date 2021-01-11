@@ -1,0 +1,43 @@
+Done in 7mins
+看了最优解才意识到是DP题
+
+
+//DP way of doing this question
+
+class Solution {
+    public int[] replaceElements(int[] array) {
+        int max = -1; //base case
+        for(int i = array.length - 1; i >= 0; i--) {
+            int temp = array[i];
+            array[i] = max;
+            max = Math.max(max, temp);
+        }
+        return array;
+    }
+}
+
+//start from right to left, always update the current index with the max value, starting with base case -1
+//17,18,5,4,6,1
+//18,6,6,6,1,-1   new array
+//18,18,6,6,6,-1  max
+
+//dummy way
+class Solution {
+    public int[] replaceElements(int[] array) {
+        for(int i = 0; i < array.length; i++) {
+            if(i == array.length - 1) {
+                array[i] = -1;
+                break;
+            }
+            array[i] = findMax(i, array);
+        }
+        return array;
+    }
+    private int findMax(int index, int[] array){
+        int max = Integer.MIN_VALUE;
+        for(int i = index + 1; i < array.length; i++) {
+            max = Math.max(max, array[i]);
+        }
+        return max;
+    }
+}

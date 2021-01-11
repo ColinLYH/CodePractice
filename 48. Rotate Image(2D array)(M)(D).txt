@@ -1,0 +1,27 @@
+图形图， 经常想不过来 极其恶心
+
+class Solution {
+    public void rotate(int[][] matrix) {
+        int left = 0;
+        int right = matrix.length - 1;
+        int fixedRight = right;
+        while(left < right) { 
+            for (int i = left; i < right; i++) {  //left其实就代表了offset
+                int temp = matrix[left][i];
+                matrix[left][i] = matrix[fixedRight - i][left];
+                matrix[fixedRight - i][left] = matrix[right][fixedRight - i];
+                matrix[right][fixedRight - i] = matrix[i][right];
+                matrix[i][right] = temp;
+            }
+            left += 1;
+            right -= 1;
+        }
+        
+    }
+}
+
+
+
+// first to deal with the outmost layer, then inner layers
+// there are 2 situations, when the inner most layer is 1 number, and when the inner most are 4 numbers
+//left = 1, right = 2

@@ -1,0 +1,21 @@
+class Solution {
+    public boolean isValidBST(TreeNode root) {
+        boolean[] flag = new boolean[1];
+        flag[0] = true;
+        helper(root, Long.MIN_VALUE, Long.MAX_VALUE, flag);
+        return flag[0];
+    }
+    
+    private void helper(TreeNode root, long lowerBound, long upperBound, boolean[] flag) {
+        if(flag[0] == false || root == null) {
+            return;
+        }
+        if(root.val <= lowerBound || root.val >= upperBound) {
+            flag[0] = false;
+            return;
+        } else {
+            helper(root.left, lowerBound, root.val, flag);
+            helper(root.right, root.val, upperBound, flag);
+        }
+    }
+}

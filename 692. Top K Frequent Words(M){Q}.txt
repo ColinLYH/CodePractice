@@ -1,0 +1,139 @@
+class Solution {
+    public List<String> topKFrequent(String[] words, int k) {
+        
+        Map<String, Integer> freqMap = new HashMap<>();
+        for(String word : words) {
+            freqMap.put(word, freqMap.getOrDefault(word, 0) + 1);
+        }
+        PriorityQueue<String> pq = new PriorityQueue<>(new Comparator<String>(){
+            @Override 
+            public int compare(String s1, String s2) {
+                if(freqMap.get(s1) == freqMap.get(s2)) {
+                    return s2.compareTo(s1); //首先是看字母顺序，如果字母顺序相同然后再看词的长短
+                }
+                return freqMap.get(s1) < freqMap.get(s2) ? -1 : 1;
+            }
+        });
+        for(String s : freqMap.keySet()) {
+            pq.offer(s);
+            if(pq.size() > k) {
+                pq.poll();
+            }
+        }
+        
+        List<String> result = new ArrayList<>();
+        while(!pq.isEmpty()){
+            result.add(pq.poll());
+        }
+        Collections.reverse(result);
+        return result;
+    }
+}
+
+
+//下面这种写法不知道为什么不对
+class Solution {
+    public List<String> topKFrequent(String[] words, int k) {
+        
+        Map<String, Integer> freqMap = new HashMap<>();
+        for(String word : words) {
+            freqMap.put(word, freqMap.getOrDefault(word, 0) + 1);
+        }
+        PriorityQueue<String> pq = new PriorityQueue<>(new Comparator<String>(){
+            @Override 
+            public int compare(String s1, String s2) {
+                if(freqMap.get(s1) == freqMap.get(s2)) {
+                    return s2.compareTo(s1); //首先是看字母顺序，如果字母顺序相同然后再看词的长短
+                }
+                return freqMap.get(s1) < freqMap.get(s2) ? -1 : 1;
+            }
+        });
+        for(String s : freqMap.keySet()) {
+            if(pq.size() < k) {
+                pq.offer(s);
+            } else {
+                if(freqMap.get(pq.peek()) < freqMap.get(s)) {
+                    pq.poll();
+                    pq.offer(s);
+                }
+            }
+        }
+        
+        List<String> result = new ArrayList<>();
+        while(!pq.isEmpty()){
+            result.add(pq.poll());
+        }
+        Collections.reverse(result);
+        return result;
+    }
+}
+
+
+//First: to put all words into a hashmap
+//then according to the words' frequency, I create a Cell class with two field frequency and word itself
+//then offer all the Cells into a PriorityQueue with higher word frequency as higher priority (PriorityQueue size K)
+//when a word comes, if smaller frequency than top element, then don't add, if greater, then add(because top of the PQ is already the smallest frequency)
+//then keep popping k times
+
+//Time Complexity: n + n + nlogk = nlogk
+//space complexity: n + n + k = n
+
+
+//记住***不要用***下面的方法做
+class Solution {
+    public List<String> topKFrequent(String[] words, int k) {
+        List<String> result = new ArrayList<>();
+        Map<String, Integer> freqMap = new HashMap<>();
+        for(String word : words) {
+            Integer i = freqMap.get(word);
+            if (i == null) {
+                freqMap.put(word, 1);
+            } else {
+                freqMap.put(word, i + 1);
+            }
+        }
+        PriorityQueue<Cell> pq = new PriorityQueue<>(new Comparator<Cell>(){
+            @Override 
+            public int compare(Cell c1, Cell c2) {
+                if(c1.freq == c2.freq) {
+                    return 0;
+                }
+                return c1.freq < c2.freq ? -1 : 1;
+            }
+        });
+        for(Map.Entry<String, Integer> m : freqMap.entrySet()) {
+            if(pq.size() < k) {
+                pq.offer(new Cell(m.getKey(), m.getValue()));
+            } else {
+                if(m.getValue() > pq.peek().freq) {
+                    pq.poll();
+                    pq.offer(new Cell(m.getKey(), m.getValue()));
+                }
+            }
+        }
+        for(int i = k; i > 0; i--) {
+            result.add(pq.poll().word);
+        }
+        Collections.reverse(result);
+        return result;
+    }
+    
+    class Cell{
+        String word;
+        int freq;
+        public Cell (String word, int freq){
+            this.word = word;
+            this.freq = freq;
+        }
+    }
+}
+
+
+//First: to put all words into a hashmap
+//then according to the words' frequency, I create a Cell class with two field frequency and word itself
+//then offer all the Cells into a PriorityQueue with higher word frequency as higher priority (PriorityQueue size K)
+//when a word comes, if smaller frequency than top element, then don't add, if greater, then add(because top of the PQ is already the smallest frequency)
+//then keep popping k times
+
+//Time Complexity: n + n + nlogk = nlogk
+//space complexity: n + n + k = n
