@@ -1,0 +1,28 @@
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        int longest = 0;
+        Set<Character> charSet = new HashSet<>();
+        int left = 0;
+        int right = 0;
+        while(right < s.length()) {
+            if(!charSet.contains(s.charAt(right))) {
+                charSet.add(s.charAt(right));
+                right++;
+                longest = Math.max(longest, right - left);
+            } else {
+                charSet.remove(s.charAt(left));
+                left++;
+            }
+        }
+        return longest;
+    }
+}
+
+// abcabcbb
+//    ___
+//checking for repeating char is to use hashSet
+//if there is no such char in hashSet, we add it to our hashset and increase the window size
+//if there is such char in hashset, we check whether the current window size is greater than global longest, if so, update, if not, ignore
+//then we shrink the window from the first char in the window(at the same time delete all chars that are out of the window size)
+//until the char we are looking at == the head of the window, 
+//and keep doing the rest

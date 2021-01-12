@@ -1,0 +1,49 @@
+//忘记check边界了，忘记dedup了
+class Solution {
+    public int kthSmallest(int[][] matrix, int k) {
+        int index = k; //used for getting the kth index at the end
+        PriorityQueue<Cell> minHeap = new PriorityQueue<>(new Comparator<Cell>(){
+            @Override
+            public int compare(Cell c1, Cell c2) {
+                if(c1.val == c2.val) {
+                    return 0;
+                }
+                return c1.val < c2.val ? -1 : 1;
+            }
+        });
+        List<Integer> result = new ArrayList<>();
+        boolean[][] dedup = new boolean[matrix.length][matrix.length];
+        minHeap.offer(new Cell(0, 0, matrix[0][0]));
+        dedup[0][0] = true;
+        while(index-- > 0) {
+            Cell toExpand = minHeap.poll();
+            if(toExpand.row + 1 < matrix.length && !dedup[toExpand.row + 1][toExpand.col]) {
+                minHeap.offer(new Cell(toExpand.row + 1, toExpand.col, matrix[toExpand.row + 1][toExpand.col]));
+                dedup[toExpand.row + 1][toExpand.col] = true;
+            }
+            
+            if(toExpand.col + 1 < matrix[0].length && !dedup[toExpand.row][toExpand.col + 1]) {
+                minHeap.offer(new Cell(toExpand.row, toExpand.col + 1, matrix[toExpand.row][toExpand.col + 1]));
+                dedup[toExpand.row][toExpand.col + 1] = true;
+            }
+            
+            result.add(toExpand.val);
+        }
+        return result.get(k - 1);
+    }
+}
+class Cell{
+    int row;
+    int col;
+    int val;
+    public Cell(int row, int col, int val){
+        this.row = row;
+        this.col = col;
+        this.val = val;
+    }
+}
+//[ 11 11 12 13    Pqueue(Minheap)
+//[1 5 9 10       result array
+// arraylist.get(k - 1)
+
+//k = 4

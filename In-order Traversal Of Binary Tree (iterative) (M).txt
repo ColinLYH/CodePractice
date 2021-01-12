@@ -1,0 +1,23 @@
+public class Solution {
+  public List<Integer> inOrder(TreeNode root) {
+    List<Integer> result = new ArrayList<>();
+    Deque<TreeNode> stack = new ArrayDeque<>();
+    toLeftMost(root, stack);
+    while(!stack.isEmpty()) {
+      TreeNode toPrint = stack.pollLast();
+      toLeftMost(toPrint.right, stack);
+      result.add(toPrint.key);
+    }
+    return result;
+  }
+// [1 
+  private void toLeftMost(TreeNode root, Deque<TreeNode> stack){
+    if(root == null) {
+      return;
+    }
+    while(root != null) {
+      stack.offerLast(root);
+      root = root.left;
+    }
+  }
+}

@@ -1,3 +1,7 @@
 {Q}:有问题的题
 (D):Disgusting
 (E M H): esay medium hard题
+(IN): Easy in 15, Medium in 30, Hard in 50mins successfully (Including clarification, coding and debugging)
+(NIN):'(IN)
+(BF) Bug free 1time
+(NBF) couldn't found the bug before click run
