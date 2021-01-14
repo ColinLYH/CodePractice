@@ -1,0 +1,91 @@
+//time complexity: nlogn with this way
+//在这个题里我maintain了一个以interval的start排序的list, 所以可以用binary search 做到nlogn
+//用treeMap可以达成同样的效果
+class MyCalendar {
+    private List<int[]> intervals = new ArrayList<>();
+    
+    public MyCalendar() {
+        
+    }
+    
+    public boolean book(int start, int end) {
+        if(!hasOverlap(start, end)) {
+            addInterval(start, end);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    // [13,32] [19,30] [33,51] [53,63] [75,92] [97,100]
+    private boolean hasOverlap(int start, int end) {
+        if(intervals.size() == 0 || intervals.get(0)[0] >= end || intervals.get(intervals.size() - 1)[1] <= start) {
+            return false;
+        }
+        
+        int pos = findPosition(start);
+        if(intervals.get(pos)[0] < end && intervals.get(pos)[1] > start || intervals.get(pos - 1)[0] < end && intervals.get(pos - 1)[1] > start) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    private void addInterval(int start, int end){//when adding, always add base on start
+        if (intervals.size() == 0) {
+            intervals.add(0, new int[]{start, end});
+            return;
+        }   else if(start >= intervals.get(intervals.size() - 1)[1]) {
+            intervals.add(new int[]{start, end});
+            return;
+        }
+        int position = findPosition(start); //find the position to insert by binary search
+        intervals.add(position, new int[]{start, end});
+    }
+    
+    private int findPosition(int target) {//find the smallest start that's greater than this target (smallest larger problem)
+        
+        int left = 0;
+        int right = intervals.size() - 1;
+        while(left < right - 1) {
+            int mid = left + (right - left) / 2;
+            if(intervals.get(mid)[0] > target) {
+                right = mid;
+            } else {
+                left = mid;
+            }
+        }
+        if(intervals.get(left)[0] > target) {
+            return left;
+        } else {
+            return right;
+        }
+    }
+    
+}
+
+/**
+ * Your MyCalendar object will be instantiated and called as such:
+ * MyCalendar obj = new MyCalendar();
+ * boolean param_1 = obj.book(start,end);
+ */
+
+//always keep a list of intervals(already merged together), and check if there is overlap
+
+//all the situations with two intervals:
+//这些逻辑可以被简略成：我的尾大于你的头 我的头小于你的尾，
+因为：
+//不相交就是:我的尾小于等于你的头 || 我的头大于等于你的尾
+//取反就是: 我的尾大于你的头 && 我的头小于你的尾
+
+//  -----         old schedule
+//        -----   new schedule
+
+//  -----
+//     -----      start of new is > old start and < old end
+
+//      -----    
+//   -----        end of new is > old start and < old end
+
+//  ---------     
+//    -----       this situation is already covered by the previous two
+

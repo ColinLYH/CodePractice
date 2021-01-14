@@ -1,0 +1,3 @@
+和nlogn的方法差别在于没用binarySearch
+既然不用binarysearch为什么要maintain一个sorted list
+太智障了

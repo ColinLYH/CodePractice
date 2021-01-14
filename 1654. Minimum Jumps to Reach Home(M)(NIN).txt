@@ -1,0 +1,106 @@
+//忘记dedup!!!!!!!!!!!!
+//这是第二次做bfs忘记dedup了
+class Solution {
+    public int minimumJumps(int[] forbidden, int a, int b, int x) {
+        Deque<Cell> queue = new ArrayDeque<>();
+        Set<Integer> forbiddenSet = toSet(forbidden);
+        Set<Integer> posSet = new HashSet<>();
+        queue.offerLast(new Cell(0,0));
+        posSet.add(0);
+        int jumps = 0;
+        while(!queue.isEmpty()) {
+            int size = queue.size();
+            for(int i = 0; i < size; i++) {
+            
+                Cell curCell = queue.pollFirst();
+                if(curCell.pos == x) {
+                    return jumps;
+                }
+                if(!forbiddenSet.contains(curCell.pos + a) && curCell.pos + a <= 2000 + 2 * b && !posSet.contains(curCell.pos + a)) {
+                    queue.offerLast(new Cell(curCell.pos + a,0));
+                    posSet.add(curCell.pos + a);
+                }
+                if(curCell.pos - b >= 0 && curCell.backCount < 1 && !forbiddenSet.contains(curCell.pos - b) && !posSet.contains(curCell.pos - b)) {
+                    queue.offerLast(new Cell(curCell.pos - b, curCell.backCount + 1));
+                    
+                    //posSet.add(curCell.pos - b);因为在每一个位置都应该有往前跳和往后跳的资格，但是你如果往后跳到了某个点，因为没有连续后跳两次的权力，所以这个点就失去了后跳的资格
+                    //但是如果你从前面的某个点跳到这个点，那这个点还是有后跳的资格的，所以不能把这个点加到forbidden，因为前面的某个点还能跳到这个点(从而让这个点有了后跳的权利)
+                    //posSet的意义其实是去dedup那些同时失去了往前和往后跳的权力的点，如果一个点只往前或往后跳过，那就不该把它加入这个dedup的set
+                }
+            }
+            jumps++;
+        }
+        return -1;
+    }
+   //0 1 2 3 4 5
+   //    x 
+    
+    private Set<Integer> toSet(int[] forbidden) {
+        Set<Integer> result = new HashSet<>();
+        for(int i : forbidden) {
+            result.add(i);
+        }
+        return result;
+    }
+}
+
+class Cell {
+    int pos; // the position of the bug on x-axis
+    int backCount; //the totalNumber of backward jump in a row this bug had
+    public Cell(int pos, int backCount){
+        this.pos = pos;
+        this.backCount = backCount;
+    }
+}
+//*****************智障行为******************
+//     @Override 
+//     public boolean equals(Object o){
+//         if (this == o) {
+//             return true;
+//         }
+//         if(o == null || this.getClass() != o.getClass()) {
+//             return false;
+//         }
+//         Cell c = (Cell)o;
+//         return this.pos == o.pos;
+//     }
+    
+//     @Override
+//     public int hashCode() {
+//         this.pos;
+//     }
+
+
+//1.并想不出用dp的思想怎么解决,constraint太多了
+//                   H
+// 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+//   x     x                       x  x        x
+//  ->3
+//  <- 15
+
+//if we can jump forward we jump forward
+//if we are beyond home, we check whether we can jump back to home
+//if we can't jump forward, we try to jump backward
+
+//在home前面的情况下,是否需要jump backward呢？
+//3 - 1 + 3 = 5, 3 + 3 - 1也等于5
+//但是如果是 a = 5, b = 1, home = 7, 那就需要0->5->4->3->8->7(因为不能连续超过两次backward所以不能0->5->10->9->8->7) 
+//那么这样如果在前面不往回跳的话就永远没法到家
+//             H
+// 1 2 3 4 5 6 7 8 9 10
+//  
+
+
+//2. thinking about using bfs
+//             (0,0)
+//          /         \      jump to all the possible valid positions, there are two positions,
+//                           forward and backward (withbackward, need to check the backward counter < 2 && pos - b >= 0, and with a forward jump, clear backward counter to 0
+//BaseCases:
+//2.1 once we reached home, return jump nums
+//2.2 if all the branch done and no answer, return -1;
+
+//check 1.if all the positions are forbidden
+//      2.if already passed home and  2*b <= a, then return (cut this branch)
+//      3.if 2*b > a, means there is still a chance to jump back to home, we still need to generate more of those branches
+//
+//不太懂time complexity怎么分析了

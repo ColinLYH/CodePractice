@@ -1,0 +1,50 @@
+class Solution {
+    public String getHint(String secret, String guess) {
+        StringBuilder sb = new StringBuilder();
+        int bulls = 0;
+        int cows = 0;
+        Map<Character, Integer> freqMap = new HashMap<>();
+        Set<Integer> index = new HashSet<>();
+        for(int k = 0; k < secret.length(); k++) { //get all the bulls first
+            if(secret.charAt(k) == guess.charAt(k)) {
+                index.add(k); //if the current index is a bull, then mark this index
+                bulls++;
+            }
+        }
+        
+        for (int i = 0; i < secret.length(); i++) {
+            if(index.contains(i)) {
+                continue;
+            }
+            freqMap.put(secret.charAt(i), freqMap.getOrDefault(secret.charAt(i), 0) + 1);
+        }
+        for (int j = 0; j < guess.length(); j++) {
+            if(index.contains(j)) {
+                continue;
+            }
+            if (freqMap.containsKey(guess.charAt(j))) {
+                cows++;
+                char curChar = guess.charAt(j);
+                int newFreq = freqMap.get(curChar) - 1;
+                if (newFreq == 0) {
+                    freqMap.remove(curChar);
+                } else {
+                    freqMap.put(curChar, newFreq);
+                }
+            }
+        }
+        
+        sb.append(bulls);
+        sb.append("A");
+        sb.append(cows);
+        sb.append("B");
+        return sb.toString();
+    }
+}
+
+//first convert this secret String into a map with chars and occurrences of chars (frequency map)
+//once there is a char in guess that is also in secret, we decrease the frequency of the char in the map by 1, and increase cow
+//if a char's frequency is decrease to 0, we delete it from freqMap
+
+//Finding bull is really easy, one for loop and see if they have the same chars on the same indices.
+//Finding cow we can use a frequency
