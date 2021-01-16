@@ -1,0 +1,54 @@
+class Solution {
+    public int calculate(String s) {
+        if (s == null || s.isEmpty()) {
+            return 0;
+        }
+        Deque<Integer> stack = new ArrayDeque<>();
+        int currentNum = 0;
+        char operator = '+';
+        for (int i = 0; i < s.length(); i++) {
+            char curChar = s.charAt(i);
+            
+            if (Character.isDigit(curChar)) {
+                currentNum = currentNum * 10 + (curChar - '0');
+            } 
+            
+            if (!Character.isDigit(curChar) && !Character.isWhitespace(curChar) || i == s.length() - 1) {
+                if (operator == '+') {
+                    stack.offerLast(currentNum);
+                } else if (operator == '-') {
+                    stack.offerLast(-currentNum);
+                } else if (operator == '*') {
+                    stack.offerLast(stack.pollLast() * currentNum);
+                } else if (operator == '/') {
+                    stack.offerLast(stack.pollLast() / currentNum);
+                }
+                currentNum = 0;
+                operator = curChar;
+            }
+        }
+        int result = 0;
+        while(!stack.isEmpty()) {
+            result = result + stack.pollLast();
+        }
+        return result;
+    }
+    
+}
+
+
+// 3+2*2
+// just a few possible values
+// [4 + 15 
+
+//four situations
+//1+2
+//1-2
+//1*2
+//1/2
+
+//大体思路就是 碰到一个新的operator的时候把之前的operator和number看成一个组合, 
+//比如1 - 2 + 3, 碰到 - 的时候,把 +1(加号是一开始默认值) 加入到stack里 碰到 + 的时候把 -2 加入到stack里
+//然后最后一个数字特殊处理, 只要是最后一个数字, 就把他前面的operator处理一下
+// 如果是* 和 / 的话, 就马上把当前记录的数字和stack顶端的数字做operation。
+//过完一遍string以后 做一个post processing 把stack里的数全加起来 因为stack里面一定只有正数和负数 乘和除肯定都在loop里被handle了
