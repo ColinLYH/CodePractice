@@ -1,0 +1,63 @@
+class RandomizedSet {
+    Map<Integer, Integer> randomMap;  //A value to index map
+    List<Integer> valueList;
+    /** Initialize your data structure here. */
+    public RandomizedSet() {
+        randomMap = new HashMap<>();
+        valueList = new ArrayList<>();
+    }
+    
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    public boolean insert(int val) {
+        if(!randomMap.containsKey(val)) {
+            valueList.add(val);
+            randomMap.put(val, valueList.size() - 1);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    public boolean remove(int val) {
+        if(randomMap.containsKey(val)) {
+            swap(randomMap.get(val), valueList.size() - 1);
+            valueList.remove(valueList.size() - 1);
+            randomMap.remove(val);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    /** Get a random element from the set. */
+    public int getRandom() {
+        int size = valueList.size();
+        return valueList.get((int)(size * Math.random()));
+    }
+    
+    public void swap(int left, int right) {
+        int leftVal = valueList.get(left);
+        int rightVal = valueList.get(right);
+        randomMap.put(leftVal, right);
+        randomMap.put(rightVal, left);
+        
+        valueList.set(left, rightVal);
+        valueList.set(right, leftVal);
+    }
+}
+//Math.random() will return a number of [0, 1)
+// size() * Math.random() == 0   =>  1 / size
+// e.g. if size == 1 => 1/1 = 100%, 
+//      if size == 2 => 1/2 = 50%
+
+/**
+ * Your RandomizedSet object will be instantiated and called as such:
+ * RandomizedSet obj = new RandomizedSet();
+ * boolean param_1 = obj.insert(val);
+ * boolean param_2 = obj.remove(val);
+ * int param_3 = obj.getRandom();
+ */
+
+//还是得doubly linkedList和hashmap结合
+//因为getRandom需要有一个可以让我们get随机数字的地方 而hashset自己并不能支持这个功能

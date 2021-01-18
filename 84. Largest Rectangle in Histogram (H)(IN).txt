@@ -1,0 +1,30 @@
+class Solution {
+    public int largestRectangleArea(int[] heights) {
+	        int globalMax = 0;
+	        Deque<Integer> indexStack = new ArrayDeque<>();
+	        for (int i = 0; i <= heights.length; i++) {
+	            int curHeight;
+	            if(i == heights.length) {
+	                curHeight = 0;
+	            } else {
+	                curHeight = heights[i];
+	            }
+	            
+	            if (indexStack.isEmpty() || heights[indexStack.peekLast()] <= curHeight) {
+	                indexStack.offerLast(i);
+	            } else {
+	                while(indexStack.peekLast() != null && heights[indexStack.peekLast()] > curHeight) {
+	                    int index = indexStack.pollLast();
+	                    int height = heights[index];
+	                    int length = indexStack.peekLast() == null ? i : i - indexStack.peekLast() - 1;
+	                    globalMax = Math.max(globalMax, height * length);
+	                }
+	                indexStack.offerLast(i);
+	            }
+	        }
+	        return globalMax;
+	    }
+}
+
+
+//for each bar at each index, if the next bar is shorter, then there is no need to keep this bar anymore  

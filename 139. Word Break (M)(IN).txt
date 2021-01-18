@@ -1,0 +1,33 @@
+class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        Set<String> dict = new HashSet<>();
+        for(String str : wordDict) {
+            dict.add(str);
+        }
+        
+        boolean[] array = new boolean[s.length() + 1];
+        
+        array[0] = true;
+        for(int i = 1; i < s.length() + 1; i++) {
+            for(int j = 0; j <= i - 1; j++) {
+                if(array[j] == true && dict.contains(s.substring(j, i))) {
+                    array[i] = true;
+                }
+            }
+        }
+        return array[array.length - 1];
+    }
+}
+
+// leetcode
+// i
+// j 
+
+// [             dp array, each index represent the substring from 0 to i of S, 
+// if the substring can be decomposed into dictionary words, then the value of the index of substring in array, is true, if not decomposable then false
+//**by decomposable, a substring's left and right part much be both in the dictionary
+
+//  0      1      2      3      4        5        6           7        8
+//[true, false, false, false, true  ,  false ,  false  ,   false,     true
+//  "" ,  "l" , "le" , "lee", "leet", "leetc", "leetco", "leetcod" "leet|code"
+//                                                                   we get left part == true in the dp array, and right part in the dictionary == true

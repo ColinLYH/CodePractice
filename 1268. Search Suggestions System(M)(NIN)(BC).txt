@@ -1,0 +1,61 @@
+class Solution {
+    public List<List<String>> suggestedProducts(String[] products, String searchWord) {
+        List<List<String>> result = new ArrayList<>();
+        int[] end = new int[] {products.length};
+        PriorityQueue<String> pq = new PriorityQueue<>(Comparator.naturalOrder());
+        
+        List<String> curProducts = new ArrayList<>();
+        
+        for(int i = 0; i < searchWord.length(); i++) {
+            curProducts.clear();
+            allPrefixMatches(products, searchWord.substring(0, i + 1), end); //call this method for every char input
+            for(int j = 0; j < end[0]; j++) {
+                pq.offer(products[j]);
+            }
+            
+            int k = 0;
+            while (k++ < 3 && !pq.isEmpty()) {
+                curProducts.add(pq.poll());
+            }
+            while (!pq.isEmpty()) {
+                pq.poll();
+            }
+            
+            result.add(new ArrayList<String>(curProducts));
+            
+        }
+        return result;
+    }
+    
+    private void allPrefixMatches(String[] products, String pattern, int[] end) { // pattern未必小于product的长度
+        
+        int i = 0;
+        int j = 0;
+        while (j < end[0]) {
+            if (pattern.length() > products[j].length()) {
+                continue;
+            }
+            if (isPrefix(products[j], pattern)) {
+                products[i++] = products[j];
+            }
+            j++;
+        }
+        end[0] = i;
+        //update end with i's value
+    }
+    
+    private boolean isPrefix(String s1, String s2) {
+        for (int i = 0; i < s2.length(); i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+//when use type a char, do a prefix match, of this string, put all the matched product into a priorityqueue with comparator s1.compareTo s2 and pop 3, 
+//and also put all the matched product back to the product array with an end
+//because if there is no delete operation, the prefix will everytime shrink the searching space
+//store all products into a priorityqueue,
+//everytime

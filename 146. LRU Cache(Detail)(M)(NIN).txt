@@ -1,0 +1,98 @@
+完全明白怎么做，但是实现起来好多bug
+
+总结：
+做hashMap和doubly linkedlist结合的题的时候，因为有前和后2个指针，当挪动head和tail位置的时候一定一定要把每个node的两个指针都想一遍，贴别是当只有1个node(head和tail在一起的时候)
+
+class LRUCache {
+    
+    DoublyNode head;
+    DoublyNode tail;
+    Map<Integer, DoublyNode> nodeMap;
+    int capacity;
+    
+    public LRUCache(int capacity) {
+        nodeMap = new HashMap<>();
+        head = null;
+        tail = null;
+        this.capacity = capacity;
+    }
+    
+    public int get(int key) {
+        if (!nodeMap.containsKey(key)) {
+            return -1;
+        }
+        DoublyNode valueNode = nodeMap.get(key);
+        if (valueNode == head) {
+            return valueNode.value;
+        }
+        if (valueNode == tail) {
+            tail = valueNode.prev;
+            tail.next = null;
+        } else {
+            valueNode.prev.next = valueNode.next;
+            valueNode.next.prev = valueNode.prev;
+        }
+        valueNode.prev = null;
+        valueNode.next = head;
+        head.prev = valueNode;
+        head = valueNode;
+        return valueNode.value;
+    }
+    
+    public void put(int key, int value) {
+        
+            if (nodeMap.containsKey(key)) {
+                nodeMap.get(key).value = value;
+                get(key);
+            } else {
+                DoublyNode newNode = new DoublyNode(value, key);
+                if (nodeMap.size() >= capacity) {  //if LRU size is >= than capacity 
+                    DoublyNode nodeToRemove = tail;
+                    nodeMap.remove(nodeToRemove.key);
+                    tail = tail.prev;
+                    nodeToRemove.prev = null;
+                    if (tail != null) {
+                        tail.next = null;
+                    } else if (tail == null){ //tail == null意味着head也等于null
+                        head = null;
+                    }
+                }
+                if (head == null) {
+                    head = newNode;
+                    tail = newNode;
+                } else {
+                    newNode.next = head;
+                    newNode.prev = null;
+                    head.prev = newNode;
+                    head = newNode;
+                }
+            
+                nodeMap.put(key, newNode);
+            }
+    }
+}
+
+class DoublyNode {
+    DoublyNode prev = null;
+    DoublyNode next = null;
+    int value;
+    int key;
+    public DoublyNode(int value, int key){
+        this.value = value;
+        this.key = key;
+    }
+}
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache obj = new LRUCache(capacity);
+ * int param_1 = obj.get(key);
+ * obj.put(key,value);
+ */
+
+//we should use doubly linkedlist because we need to connect the prev to next of the current node and move the current node to the head
+// we can have a hashmap with key: key, value: reference to a node of linkedlist
+// when we get, first find the value in hashmap, and get the corresponding listnode, move the node to the head, and reconnect it's prev and next node
+// when we put, check the size of linkedlist, if oversized, remove the tail of the list, and remove the corresponding entry in hashmap, 
+// then create a new element to head of the list and add the reference of this node to hashmap
+// 

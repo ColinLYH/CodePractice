@@ -5,3 +5,5 @@
 (NIN):'(IN)
 (BF) Bug free 1time
 (NBF) couldn't found the bug before click run
+(detail)题里有很多细节方面的东西，一不注意就有bug
+(BC) bad complexity: 意味着有一个对应版的good complexity (用来引以为戒)
