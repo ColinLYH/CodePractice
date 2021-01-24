@@ -1,0 +1,59 @@
+
+
+//O(Row * Col * 3^L) if at every i,j dfs travel the whole board
+
+
+public class WordSearch {
+	public boolean exist(char[][] board, String word) {
+        boolean[] flag = new boolean[1];
+        
+        int[][] dirs = new int[][] {{-1,0},{1,0},{0,-1},{0,1}};
+        boolean[][] dedup = new boolean[board.length][board[0].length];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) { 
+                if (board[i][j] != word.charAt(0)) {
+                	continue;
+                }
+                
+                helper(board, word, flag, i, j, dirs, 0, dedup);
+            }
+        }
+    
+        
+        return flag[0];
+    }
+    
+    public void helper(char[][] board, String word, boolean[] flag, int row, int col, int[][] dirs, int index, boolean[][] dedup) {
+        if (flag[0] == true) {
+            return;
+        }
+        
+        if (index == word.length() - 1) {
+        	flag[0] = true;
+        	return;
+        }
+        
+        
+	    for (int[] dir : dirs){
+	        if (checkValidPos(board, row + dir[0], col + dir[1], index + 1, word) && !dedup[row + dir[0]][col + dir[1]]) {
+	        	dedup[row + dir[0]][col + dir[1]] = true;
+	        	helper(board, word, flag, row + dir[0], col + dir[1], dirs, index + 1, dedup);
+	        	dedup[row + dir[0]][col + dir[1]] = false;
+	        }
+	    }        
+    }
+    
+    public boolean checkValidPos(char[][] board, int row, int col, int index, String word) {
+        if (row >= board.length || row < 0 || col >= board[0].length || col < 0 || word.charAt(index) != board[row][col]) {
+            return false;
+        }
+        return true;
+    }
+    
+    public static void main (String[] args) {
+    	WordSearch w = new WordSearch();
+    	System.out.println(w.exist(new char[][] {{'A','B','C','E'},
+    											 {'T','F','C','S'},
+    											 {'A','D','E','E'}}, "ABCCED"));
+    }
+}

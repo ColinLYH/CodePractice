@@ -1,0 +1,86 @@
+class Solution {
+    public List<List<String>> suggestedProducts(String[] products, String searchWord) {
+        Trie trie = new Trie();
+        List<List<String>> result = new ArrayList<>();
+        for (String product : products) {
+            trie.insert(product);
+        }
+        for (int i = 0; i < searchWord.length(); i++) {
+            List<String> curResult = new ArrayList<>();
+            trie.findAllWordsUnderNode( searchWord.substring(0, i + 1), curResult, result);
+        }
+        return result;
+    }
+}
+
+
+class TrieNode {
+	
+	TrieNode[] children = new TrieNode[26];
+	String value ;
+	boolean isWord = false;
+	
+}
+
+
+class Trie {
+	TrieNode root;
+	
+	public Trie() {
+		root = new TrieNode();
+	}
+	
+	public void insert (String word) { //insert a trieNode into the trieTree
+		TrieNode cur = root;
+		for (int i = 0; i < word.length(); i++) {
+			if (cur.children[word.charAt(i) - 'a'] == null) {
+				TrieNode nextNode = new TrieNode();
+				cur.children[word.charAt(i) - 'a'] = nextNode;
+			}
+			cur = cur.children[word.charAt(i) - 'a'];
+		}
+		cur.isWord = true;
+	}
+	
+
+	
+	public void findAllWordsUnderNode (String prefix, List<String> curResult, List<List<String>> result) {
+		TrieNode cur = root;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < prefix.length(); i++) { // find the starting point
+            TrieNode next = cur.children[prefix.charAt(i) - 'a'];
+            if (next == null) {
+                result.add(curResult);
+                return;
+            }
+            cur = next;
+        }
+        
+        sb.append(prefix);
+        helper(cur, curResult, sb);
+        result.add(curResult);
+	}
+    
+    public void helper(TrieNode cur, List<String> curResult, StringBuilder sb) {
+        if (cur == null || curResult.size() >= 3) {
+            return;
+        }
+        
+        if (cur.isWord == true) {
+            curResult.add(sb.toString());
+        }
+        for (char c = 'a'; c <= 'z'; c++) {
+            if (cur.children[c - 'a'] != null) {
+                sb.append(c);
+                helper(cur.children[c - 'a'], curResult, sb);
+                sb.deleteCharAt(sb.length() - 1);
+            }
+        }
+        
+        
+    }
+}
+
+
+
+

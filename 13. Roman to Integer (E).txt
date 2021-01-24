@@ -1,0 +1,40 @@
+class Solution {
+    public int romanToInt(String s) {
+        Map<String, Integer> romanCharMap = new HashMap<>();
+        romanCharMap.put("I", 1);
+        romanCharMap.put("IV",4);
+        romanCharMap.put("V", 5);
+        romanCharMap.put("IX",9);
+        
+        romanCharMap.put("X", 10);
+        romanCharMap.put("XL",40);
+        romanCharMap.put("L", 50);
+        romanCharMap.put("XC",90);
+        
+        romanCharMap.put("C", 100);
+        romanCharMap.put("CD",400);
+        romanCharMap.put("D", 500);
+        romanCharMap.put("CM",900);
+        
+        romanCharMap.put("M", 1000);
+        
+        int sum = 0;
+        int i = 0;
+        while (i < s.length()) {
+            String twoChars = null;
+            if (i + 2 <= s.length()) {
+                twoChars = s.substring(i, i + 2);
+            }
+                
+            if (romanCharMap.containsKey(twoChars)) {
+                sum = sum + romanCharMap.get(twoChars);
+                i = i + 2;
+            } else {
+                sum = sum + romanCharMap.get(s.substring(i, i + 1));
+                i++;
+            }
+        }
+        return sum;
+    }
+    
+}
