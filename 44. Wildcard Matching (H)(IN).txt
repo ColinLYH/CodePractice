@@ -1,0 +1,91 @@
+class Solution {
+    public boolean isMatch(String s, String p) {
+        boolean[][] matrix = new boolean[p.length() + 1][s.length() + 1];
+        for (int i = 0; i <= p.length(); i++) {
+            for (int j = 0; j <= s.length(); j++) {
+                if (i == 0) {
+                    if (j == 0) {
+                        matrix[i][j] = true;
+                    } else {
+                        matrix[i][j] = false;
+                    }
+                } else if (j == 0) {
+                    if (matrix[i - 1][j] == true && p.charAt(i - 1) == '*') {
+                        matrix[i][j] = true;
+                    } else {
+                        matrix[i][j] = false;
+                    }
+                } else if (p.charAt(i - 1) != '*' && p.charAt(i - 1) != '?') {
+                    if (p.charAt(i - 1) == s.charAt(j - 1) && matrix[i - 1][j - 1] == true) {
+                        matrix[i][j] = true;
+                    } else {
+                        matrix[i][j] = false;
+                    }
+                } else if (p.charAt(i - 1) == '?') {
+                    if (matrix[i - 1][j - 1] == true) {
+                        matrix[i][j] = true;
+                    } else {
+                        matrix[i][j] = false;
+                    }
+                } else if (p.charAt(i - 1) == '*'){ 
+                    if (matrix[i - 1][j - 1] == true || matrix[i - 1][j] == true || matrix[i][j - 1] == true) {
+                        matrix[i][j] = true;
+                    } else {
+                        matrix[i][j] = false;
+                    }
+                }
+            }
+        }
+        return matrix[p.length()][s.length()];
+    }
+}
+
+//In this matrix, we always look at the current char（也就是当前长度的两个String的最后一个字母）
+//这道题和min edit distance的区别是matrix[i][j]左边的值不会提供任何意义 
+
+//     "" a d c e b d k
+//  "" T  F F F F F F F
+//   * T  T T T T T T T
+//   a F  T F F F F F F
+//   * F  T T T T T T T
+//   b F  F F F F T F F
+//   ? F  F F F F F T F
+//   k F  F F F F F F T
+
+//1.In the situation of current char is a letter in the pattern
+// if two letters are the same, and [i - 1][j - 1] is true 就是true
+// if two letters are different, false
+
+
+//2.In the situation of current char is a ? in the pattern
+// 在pattern当前是个?的情况下 只需要查看左上的matrix 如果左上是true 那就是true 因为左上代表不加当前pattern的?和s的letter的情况下是否match
+// 如果左上是false, 那就代表不加?和一个letter的时候是false,那加上也肯定是false
+
+//3. In the situation of current char is * in the pattern
+// if [i - 1][j - 1]左上 && [i - 1][j]上面 is false, then [i][j] is false
+//当pattern是* 左上 的意义是:当s不加当前char 并且pattern不加*的时候 能不能match上, 如果能match 那么[i][j]不管s加了什么，*都可以成功match
+//当pattern是* 上面 的意义是:当p不加当前*, 之前的pattern可不可以跟当前的s match上 match上了就代表我们的*可以当成一个"", [i][j]就可以match
+//当pattern是* 左边 的意义是:如果*可以match一个String 那么不论这个string加一个什么char *还是可以match
+//如果左上和上面都是false的话, 那么就是说 在不加*之前也不能匹配 在不加*和s的char之前 也不能匹配 那么就意味着就算加了* 不管*是什么都不能匹配 所以[i][j]是false
+
+
+//注意在这道题里 matrix[i][j]左边的数是没有意义的, 因为左边的意义是不加当前s的char,能不能和pattern match上
+//但是在这道题里 我们固定用pattern去match s。 比如在[1][2], *a这个pattern可以跟a match上, 并不能给他的右边ad提供任何信息
+//其实根本不会看到左边, 因为如果当前pattern的char match上了s的char, 左上和上方有一个是T, 那么当前char就是True
+//如果当前pattern的char 不match s的char 那么一定就不match 不需要看左边
+
+
+
+//     "" a b c a b c z z z d e
+//  "" T  F F F F F F F F F F F
+//   * T  T T T T T T T T T T T  
+//   a F  T F F T F F F F F F F
+//   b F  F T F F T F F F F F F
+//   c F  F F T F F T F F F F F
+//   ? F  F F F T F F T F F F F
+//   ? F  F F F F T F F T F F F 
+//   ? F  F F F F F T F F T F F
+//   d F  F F F F F F F F F T F
+//   e F  F F F F F F F F F F T 
+//   * F  F F F F F F F F F F T 
+

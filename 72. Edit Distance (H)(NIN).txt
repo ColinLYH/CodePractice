@@ -1,0 +1,51 @@
+class Solution {
+    public int minDistance(String word1, String word2) {
+        int row = word1.length();
+        int col = word2.length();
+        int[][] array = new int[row + 1][col + 1];
+        
+        for (int i = 0; i <= row; i++) {
+            for (int j = 0; j <= col; j++) {
+                if (i == 0) {
+                    array[i][j] = j;
+                } else if (j == 0) {
+                    array[i][j] = i;
+                } else if (word1.charAt(i - 1) == word2.charAt(j - 1)) {
+                    array[i][j] = array[i - 1][j - 1];
+                } else {
+                    array[i][j] = Math.min(array[i - 1][j - 1], array[i][j - 1]) + 1;
+                    array[i][j] = Math.min(array[i][j], array[i - 1][j] + 1);
+                }
+                
+            }
+        }
+        return array[row][col];
+    }
+}
+
+//这种二维DP的思路就是从最小的word开始build, 对这道题就是从两个空串"" 开始build这个2D table, 
+//2维array里每个index代表的是: 从横着的word变到竖着的word最少要几步
+
+//   '' h o r s e
+//'' 0  1 2 3 4 5
+//r  1  1 2 2 3 4        
+//o  2  2 1 2 3 4
+//s  3  3 2 2 2 3 
+
+//在[1][1]代表h要变成r要几步，如果用replace，就是r replace掉h然后h和r抵消掉，相当于是走左上角的线路 
+//                          如果用deletion，就是走左边的线路，相当于先把h变成""，然后左边那一格的意思是由""变成r要几步
+//                          如果用insertion,就是走上面的路，相当于把r变成""，然后""insert一个h 相当于让r变成h
+
+
+//在[1][2]的位置，表示ho变成r要几步
+//   由ho->o(删)就变成h变成r的问题(左边)   || ho insert了r和r抵消变成ho和""的问题(上面)      || ho的o replace成r 然后r和r抵消变成h变成""的问题 左上
+//       (ho->h + 1(h变成r))                        (""->ho->r)                                    (""->h->r)
+//       删除(+1所在)并replace         (先""insert成ho 再ho删一个替换一个变成r 明显不合适)    (先""insert成h 再h replace(+1所在)成r)
+//删除o以后这个问题就变成了h->r,也就是左边    
+//              [1][1] (左边)                 [0][2] 上面                                        [0][1]左上
+
+
+//如果是word1和word2的当前char相同,那就应该是左上角+0，比如在[2][2],左上角[1][1]代表的是从r到h的最短distance, 那下一个字母o和o相同，就相当于ro到ho和r到h距离相同(o不算路径)
+
+// Deletion: h -> ""
+// insert  : 
